@@ -102,9 +102,14 @@ void SlackRTM::start() {
 
 void SlackRTM::handlePayloadReceived(const std::string &payload) {
 	Json::Value d;
+#if !HAVE_SWIFTEN_3
+	Json::Reader reader;
+	if (!reader.parse(payload.c_str(), d)) {
+#else
 	Json::CharReaderBuilder rbuilder;
-	SWIFTEN_SHRPTR_NAMESPACE::shared_ptr<Json::CharReader> const reader(rbuilder.newCharReader());
-	if (!reader->parse(payload.c_str(), payload.c_str() + payload.size(), &d, NULL)) {
+	std::unique_ptr<Json::CharReader> const reader(rbuilder.newCharReader());
+	if (!reader->parse(payload.c_str(), payload.c_str() + payload.size(), &d, nullptr)) {
+#endif
 		LOG4CXX_ERROR(slackRTMLogger, "Error while parsing JSON");
 		LOG4CXX_ERROR(slackRTMLogger, payload);
 		return;

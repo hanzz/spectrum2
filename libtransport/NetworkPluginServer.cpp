@@ -1883,7 +1883,11 @@ NetworkPluginServer::wrapIncomingMedia(SWIFTEN_SHRPTR_NAMESPACE::shared_ptr<Swif
         result.push_back(msg);
         return result;
     }
+#if HAVE_SWIFTEN_3
     const std::string body = msg->getBody().get();
+#else
+    const std::string body = msg->getBody();
+#endif
 
     OobMode oobMode = OobWrapAll;
     if (CONFIG_BOOL_DEFAULTED(m_config, "service.oob_split", false))

@@ -102,10 +102,14 @@ bool HTTPRequest::GET(std::string url, Json::Value &json) {
 	if (!GET(url, m_data)) {
 		return false;
 	}
-
+#if !HAVE_SWIFTEN_3
+	Json::Reader reader;
+	if (!reader.parse(m_data.c_str(), json)) {
+#else
 	Json::CharReaderBuilder rbuilder;
-	SWIFTEN_SHRPTR_NAMESPACE::shared_ptr<Json::CharReader> const reader(rbuilder.newCharReader());
-	if (!reader->parse(m_data.c_str(), m_data.c_str() + m_data.size(), &json, NULL)) {
+	std::unique_ptr<Json::CharReader> const reader(rbuilder.newCharReader());
+	if (!reader->parse(m_data.c_str(), m_data.c_str() + m_data.size(), &json, nullptr)) {
+#endif
 		LOG4CXX_ERROR(httpRequestLogger, "Error while parsing JSON");
 	        LOG4CXX_ERROR(httpRequestLogger, m_data);
 		strcpy(curl_errorbuffer, "Error while parsing JSON");

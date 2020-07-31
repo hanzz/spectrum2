@@ -1,5 +1,6 @@
 #include <cppunit/TestFixture.h>
 #include <cppunit/extensions/HelperMacros.h>
+#include "Swiften/SwiftenCompat.h"
 #include <Swiften/Swiften.h>
 #include <Swiften/EventLoop/DummyEventLoop.h>
 #include <Swiften/Elements/XHTMLIMPayload.h>
@@ -377,7 +378,11 @@ class NetworkPluginServerTest : public CPPUNIT_NS :: TestFixture, public BasicTe
 			CPPUNIT_ASSERT_EQUAL(1, static_cast<int>(parts.size()));
 
 			//The contents of the body/xhtml should stay the same
+#if HAVE_SWIFTEN_3
 			CPPUNIT_ASSERT_EQUAL(OOB_TEST_BODY, parts[0]->getBody().get());
+#else
+			CPPUNIT_ASSERT_EQUAL(OOB_TEST_BODY, parts[0]->getBody());
+#endif
 			CPPUNIT_ASSERT_EQUAL(OOB_TEST_XHTML, parts[0]->getPayload<Swift::XHTMLIMPayload>()->getBody());
 
 			//There must be OOB tags for each link
@@ -403,7 +408,11 @@ class NetworkPluginServerTest : public CPPUNIT_NS :: TestFixture, public BasicTe
 			CPPUNIT_ASSERT_EQUAL(1, static_cast<int>(parts.size()));
 
 			//The body should be set to URI1, the xhtml should stay the same
+#if HAVE_SWIFTEN_3
 			CPPUNIT_ASSERT_EQUAL(std::string("http://example.org/example1.png"), parts[0]->getBody().get());
+#else
+			CPPUNIT_ASSERT_EQUAL(std::string("http://example.org/example1.png"), parts[0]->getBody());
+#endif
 			CPPUNIT_ASSERT_EQUAL(OOB_TEST_XHTML, parts[0]->getPayload<Swift::XHTMLIMPayload>()->getBody());
 
 			//There must be OOB tag for the first link
@@ -435,26 +444,41 @@ class NetworkPluginServerTest : public CPPUNIT_NS :: TestFixture, public BasicTe
 			std::vector<SWIFTEN_SHRPTR_NAMESPACE::shared_ptr<Swift::RawXMLPayload> > payloads;
 
 			//Verify all parts of the split
-
+#if HAVE_SWIFTEN_3
 			CPPUNIT_ASSERT_EQUAL(std::string("Test message"), parts[0]->getBody().get());
+#else
+			CPPUNIT_ASSERT_EQUAL(std::string("Test message"), parts[0]->getBody());
+#endif
 			CPPUNIT_ASSERT_EQUAL(std::string("Test message"), parts[0]->getPayload<Swift::XHTMLIMPayload>()->getBody());
-
+#if HAVE_SWIFTEN_3
 			CPPUNIT_ASSERT_EQUAL(std::string("http://example.org/example1.png"), parts[1]->getBody().get());
+#else
+			CPPUNIT_ASSERT_EQUAL(std::string("http://example.org/example1.png"), parts[1]->getBody());
+#endif
 			CPPUNIT_ASSERT_EQUAL(std::string("<img src='http://example.org/example1.png' />"), parts[1]->getPayload<Swift::XHTMLIMPayload>()->getBody());
 			payloads = parts[1]->getPayloads<Swift::RawXMLPayload>();
 			CPPUNIT_ASSERT_EQUAL(1, (int)payloads.size());
 			CPPUNIT_ASSERT_EQUAL(OOB_XML_START+"http://example.org/example1.png"+OOB_XML_END, payloads[0]->getRawXML());
-
+#if HAVE_SWIFTEN_3
 			CPPUNIT_ASSERT_EQUAL(std::string("more text"), parts[2]->getBody().get());
+#else
+			CPPUNIT_ASSERT_EQUAL(std::string("more text"), parts[2]->getBody());
+#endif
 			CPPUNIT_ASSERT_EQUAL(std::string("more text"), parts[2]->getPayload<Swift::XHTMLIMPayload>()->getBody());
-
+#if HAVE_SWIFTEN_3
 			CPPUNIT_ASSERT_EQUAL(std::string("https://example.org/example2.png"), parts[3]->getBody().get());
+#else
+			CPPUNIT_ASSERT_EQUAL(std::string("https://example.org/example2.png"), parts[3]->getBody());
+#endif
 			CPPUNIT_ASSERT_EQUAL(std::string("<img src=\"https://example.org/example2.png\">"), parts[3]->getPayload<Swift::XHTMLIMPayload>()->getBody());
 			payloads = parts[3]->getPayloads<Swift::RawXMLPayload>();
 			CPPUNIT_ASSERT_EQUAL(1, (int)payloads.size());
 			CPPUNIT_ASSERT_EQUAL(OOB_XML_START+"https://example.org/example2.png"+OOB_XML_END, payloads[0]->getRawXML());
-
+#if HAVE_SWIFTEN_3
 			CPPUNIT_ASSERT_EQUAL(std::string("final text"), parts[4]->getBody().get());
+#else
+			CPPUNIT_ASSERT_EQUAL(std::string("final text"), parts[4]->getBody());
+#endif
 			CPPUNIT_ASSERT_EQUAL(std::string("final text"), parts[4]->getPayload<Swift::XHTMLIMPayload>()->getBody());
 		}
 };

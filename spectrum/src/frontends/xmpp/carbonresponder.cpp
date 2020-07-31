@@ -1,3 +1,4 @@
+#ifdef SWIFTEN_SUPPORTS_CARBONS
 #include "carbonresponder.h"
 
 #include <iostream>
@@ -49,3 +50,4 @@ bool CarbonResponder::handleSetRequest(const Swift::JID& from, const Swift::JID&
 }
 
 }
+#endif
