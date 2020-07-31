@@ -53,6 +53,27 @@ RUN cmake -DCMAKE_BUILD_TYPE=Debug -DENABLE_TESTS=ON -DENABLE_QT4=OFF -DENABLE_F
 
 ENTRYPOINT ["make", "test"]
 
+FROM debian:jessie as test-swiften2
+
+ARG DEBIAN_FRONTEND=noninteractive
+ARG APT_LISTCHANGES_FRONTEND=none
+
+RUN apt-get update -qq
+RUN apt-get install --no-install-recommends -y dpkg-dev devscripts curl git build-essential
+RUN apt-get install --no-install-recommends -y libswiften-dev libminiupnpc-dev libnatpmp-dev libidn11-dev libxml2-dev libprotobuf-dev libmysqlclient-dev liblog4cxx10-dev protobuf-compiler libpopt-dev libpqxx3-dev cmake libev-libevent-dev libboost-all-dev libcurl4-openssl-dev libsqlite3-dev libjsoncpp-dev libcppunit-dev
+
+#TODO include in Build-Depends
+RUN apt-get install --no-install-recommends -y libssl-dev
+
+# Spectrum 2
+COPY . spectrum2/
+
+WORKDIR spectrum2
+
+RUN cmake -DCMAKE_BUILD_TYPE=Debug -DENABLE_TESTS=ON -DENABLE_QT4=OFF -DENABLE_IRC=OFF . && make -j4
+
+ENTRYPOINT ["make", "test"]
+
 FROM spectrum2/alpine-build-environment:latest as test-musl
 
 COPY . spectrum2/
